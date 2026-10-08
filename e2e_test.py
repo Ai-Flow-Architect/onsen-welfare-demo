@@ -47,6 +47,7 @@ with sync_playwright() as p:
     # QR（デモボタン）→ コース選択（平日＝追加料金なし）
     pg.click("#toScan")
     pg.click("text=みなとの湯 本店 のQRを読み込んだことにする")
+    pg.wait_for_selector("text=① コースを選んでください", timeout=5000)
     pg.click("text=入浴＋岩盤浴")
     check("平日は追加料金なし", pg.is_visible("text=本日の追加料金はありません"))
     check("平日の店頭払い 0円", pg.inner_text("#cash") == "0円")
@@ -62,6 +63,7 @@ with sync_playwright() as p:
     pg.click("#fakeApply")
     pg.goto(URL + "#/scan")
     pg.click("text=サウナ蒸 駅前店 のQRを読み込んだことにする")
+    pg.wait_for_selector("text=① コースを選んでください", timeout=5000)
     pg.click("text=サウナ フリータイム")
     sur = pg.inner_text("#surAlert")
     check("土日料金と深夜料金を両方表示", "土日料金" in sur and "深夜料金" in sur)
@@ -79,6 +81,7 @@ with sync_playwright() as p:
     pg.click("#fakeApply")
     pg.goto(URL + "#/scan")
     pg.click("text=みなとの湯 本店 のQRを読み込んだことにする")
+    pg.wait_for_selector("text=① コースを選んでください", timeout=5000)
     pg.click("text=入浴のみ")
     check("祝日料金を表示", "祝日料金" in pg.inner_text("#surAlert"))
     pg.goto(URL + "#/card")
@@ -120,6 +123,7 @@ with sync_playwright() as p:
     pg.wait_for_selector("#mcard")
     pg.goto(URL + "#/scan")
     pg.click("text=みなとの湯 本店 のQRを読み込んだことにする")
+    pg.wait_for_selector("text=① コースを選んでください", timeout=5000)
     check("料金変更が会員画面に反映(1,000pt)", pg.is_visible("text=1,000pt"))
 
     # QR発行・作り直しで古いQRが無効
