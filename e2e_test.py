@@ -150,6 +150,17 @@ with sync_playwright() as p:
     check("翌月1日に3,000ptへ付与し直し", "3,000" in pg.inner_text("#memTable"))
     b.close()
 
+# ダークモードのPCでも明るい配色のまま
+with sync_playwright() as p2:
+    b2 = p2.chromium.launch()
+    pg2 = b2.new_page(color_scheme="dark")
+    pg2.goto(URL)
+    pg2.wait_for_selector("text=簡易デモ：画面一覧")
+    bg = pg2.evaluate("getComputedStyle(document.body).backgroundColor")
+    check(f"ダークモードでも背景が明るい ({bg})", bg == "rgb(246, 248, 250)")
+    pg2.screenshot(path=str(SHOTS / "06_dark_os.png"))
+    b2.close()
+
 check(f"JSエラー 0件 {errors}", not errors)
 ng = [n for n, ok in results if not ok]
 print(f"\n{len(results) - len(ng)}/{len(results)} OK")
