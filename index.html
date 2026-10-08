@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>湯めぐり福利厚生 簡易デモ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#f4f7f6; --card:#ffffff; --ink:#1c2b29; --sub:#5b6b68; --line:#dde5e3;
+  --main:#0f766e; --main2:#14b8a6; --warn:#b45309; --warnbg:#fef3c7; --bad:#b91c1c; --badbg:#fee2e2;
+  --ok:#15803d; --okbg:#dcfce7; --chip:#e6f2f0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1716; --card:#172321; --ink:#e7efed; --sub:#9fb2ae; --line:#2a3a37;
+    --main:#2dd4bf; --main2:#14b8a6; --warn:#fbbf24; --warnbg:#3a2e12; --bad:#f87171; --badbg:#3b1717;
+    --ok:#4ade80; --okbg:#12301d; --chip:#1f3330;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --card:#172321; --ink:#e7efed; --sub:#9fb2ae; --line:#2a3a37;
+  --main:#2dd4bf; --main2:#14b8a6; --warn:#fbbf24; --warnbg:#3a2e12; --bad:#f87171; --badbg:#3b1717;
+  --ok:#4ade80; --okbg:#12301d; --chip:#1f3330;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.6}
+a{color:var(--main)}
+.wrap{max-width:480px;margin:0 auto;padding:16px 16px 96px}
+.wide{max-width:1040px}
+header.bar{position:sticky;top:0;z-index:5;background:#0f766e;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px}
+header.bar b{font-size:16px}
+header.bar .sp{flex:1}
+header.bar a{color:#fff;font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:2px 10px}
+.demo{background:var(--warnbg);color:var(--warn);font-size:12px;padding:6px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.demo input{font-size:12px;padding:2px 4px}
+.demo button{font-size:12px;padding:2px 8px}
+h1{font-size:22px;margin:8px 0 12px}
+h2{font-size:18px;margin:20px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:16px;font-size:18px;font-weight:700;background:#0f766e;color:#fff;cursor:pointer;text-align:center;text-decoration:none;font-family:inherit}
+.btn.sub{background:var(--chip);color:var(--ink);font-weight:500}
+.btn.small{display:inline-block;width:auto;padding:6px 12px;font-size:14px}
+.btn.danger{background:#b91c1c;color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.mt{margin-top:12px}
+.muted{color:var(--sub);font-size:14px}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 10px;font-size:13px;margin:2px 4px 2px 0}
+.alert{border-radius:12px;padding:12px 14px;margin:12px 0;font-size:15px}
+.alert.warn{background:var(--warnbg);color:var(--warn)}
+.alert.bad{background:var(--badbg);color:var(--bad)}
+.alert.ok{background:var(--okbg);color:var(--ok)}
+/* 会員証 */
+.mcard{position:relative;overflow:hidden;border-radius:20px;padding:20px;color:#fff;
+  background:linear-gradient(120deg,#0f766e,#0e7490,#0f766e);background-size:300% 300%;animation:flow 6s ease infinite;
+  box-shadow:0 10px 30px rgba(15,118,110,.35)}
+@keyframes flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.mcard .shine{position:absolute;top:-50%;left:-30%;width:40%;height:200%;background:rgba(255,255,255,.18);transform:rotate(20deg);animation:shine 3s linear infinite;pointer-events:none}
+@keyframes shine{0%{left:-40%}100%{left:130%}}
+.mcard .lbl{font-size:12px;opacity:.85}
+.mcard .name{font-size:26px;font-weight:700;letter-spacing:.05em}
+.mcard .co{font-size:15px;opacity:.95}
+.mcard .pts{font-size:40px;font-weight:700;line-height:1.1}
+.mcard .clock{font-variant-numeric:tabular-nums;font-size:30px;font-weight:700;letter-spacing:.04em}
+.mcard .date{font-size:14px;opacity:.9}
+.row{display:flex;gap:12px;align-items:flex-end;justify-content:space-between}
+/* 選択肢 */
+.opt{display:flex;justify-content:space-between;align-items:center;border:2px solid var(--line);border-radius:12px;padding:14px;margin:8px 0;cursor:pointer;background:var(--card)}
+.opt.sel{border-color:var(--main);background:var(--chip)}
+.opt .p{font-weight:700;font-size:18px}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+th{background:var(--chip);font-weight:500;white-space:nowrap}
+td input,td select{width:100%;font-size:14px;padding:4px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font-family:inherit}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.tabs a{padding:6px 12px;border-radius:999px;background:var(--chip);color:var(--ink);text-decoration:none;font-size:14px}
+.tabs a.on{background:#0f766e;color:#fff}
+textarea{width:100%;min-height:110px;font-family:ui-monospace,monospace;font-size:13px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input.f,select.f{width:100%;font-size:17px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
+label.f{display:block;font-size:14px;color:var(--sub);margin:12px 0 4px}
+.qrgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.qrbox{background:#fff;color:#111;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.qrbox .q{display:flex;justify-content:center;margin:8px 0}
+#reader{width:100%;border-radius:12px;overflow:hidden}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.cancel td{color:var(--sub);text-decoration:line-through}
+@media print{header.bar,.demo,.tabs,.noprint{display:none!important}.qrbox{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="bar"><b>湯めぐり福利厚生</b><span class="sp"></span><a href="#/">画面一覧</a></header>
+<div class="demo noprint">
+  <span>🧪 デモ用の日時:</span>
+  <input type="datetime-local" id="fakeNow">
+  <button id="fakeApply">この日時にする</button>
+  <button id="fakeClear">今の日時に戻す</button>
+  <span id="fakeState"></span>
+</div>
+<main id="app"></main>
+
+<script>
+'use strict';
+/* ============ データ（デモはブラウザ内に保存。本番はサーバのDB） ============ */
+const KEY = 'onsen_welfare_demo_v1';
+const HOLIDAYS = ['2026-10-12','2026-11-03','2026-11-23','2027-01-01','2027-01-11','2027-02-11','2027-02-23','2027-03-22'];
+function rnd(){return Math.random().toString(36).slice(2,10)}
+const SEED = () => ({
+  settings:{ carryOver:false },
+  companies:[
+    {id:'C1', name:'株式会社みなと物産', monthlyPoints:3000},
+    {id:'C2', name:'あおば技研株式会社', monthlyPoints:5000},
+  ],
+  members:[
+    {id:'M001', name:'甲野 花子', companyId:'C1', email:'hanako@example.com', points:0, grantedMonth:''},
+    {id:'M002', name:'乙野 一郎', companyId:'C1', email:'ichiro@example.com', points:0, grantedMonth:''},
+    {id:'M003', name:'丙野 健太', companyId:'C2', email:'kenta@example.com', points:0, grantedMonth:''},
+  ],
+  facilities:[
+    {id:'F1', name:'みなとの湯 本店', settleRate:0.80, lateFrom:'22:00', lateTo:'05:00', token:rnd()},
+    {id:'F2', name:'サウナ蒸 駅前店', settleRate:0.75, lateFrom:'23:00', lateTo:'06:00', token:rnd()},
+  ],
+  courses:[
+    {id:'K1', facilityId:'F1', name:'入浴のみ', points:900, surWeekend:200, surLate:300},
+    {id:'K2', facilityId:'F1', name:'入浴＋岩盤浴', points:1600, surWeekend:300, surLate:300},
+    {id:'K3', facilityId:'F2', name:'サウナ 90分', points:1200, surWeekend:300, surLate:500},
+    {id:'K4', facilityId:'F2', name:'サウナ フリータイム', points:2200, surWeekend:500, surLate:500},
+  ],
+  visits:[],
+  session:{memberId:null},
+});
+let DB;
+function load(){
+  try{ DB = JSON.parse(localStorage.getItem(KEY)) }catch(e){ DB=null }
+  if(!DB || !DB.companies){ DB = SEED(); save(); }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)) }catch(e){} }
+
+/* ============ 日時（デモでは任意の日時に切り替え可能） ============ */
+let fakeOffset = 0;
+function now(){ return new Date(Date.now()+fakeOffset) }
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const ym = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+const hms = d => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+const WD = ['日','月','火','水','木','金','土'];
+const jpDate = d => `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WD[d.getDay()]}）`;
+const yen = n => Number(n).toLocaleString('ja-JP');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const byId = (arr,id) => arr.find(x=>x.id===id);
+const isoLocal = d => `${ymd(d)} ${hms(d)}`;
+
+/* ============ 業務ルール（本番もこのロジックをサーバ側に置く） ============ */
+// 毎月1日の自動付与。デモでは画面を開いた時に「今月分が未付与なら付与」で同じ結果を再現する
+function grantMonthly(){
+  const m = ym(now()); let n=0;
+  for(const mem of DB.members){
+    if(mem.grantedMonth === m) continue;
+    const co = byId(DB.companies, mem.companyId); if(!co) continue;
+    mem.points = (DB.settings.carryOver ? mem.points : 0) + co.monthlyPoints;
+    mem.grantedMonth = m; n++;
+  }
+  if(n) save();
+  return n;
+}
+function inRange(hm, from, to){ // 22:00〜05:00 のように日をまたぐ範囲にも対応
+  return from <= to ? (hm>=from && hm<to) : (hm>=from || hm<to);
+}
+function surchargeFor(course, fac, d){
+  const items=[]; const holiday = HOLIDAYS.includes(ymd(d));
+  if(d.getDay()===0 || d.getDay()===6 || holiday) items.push({label: holiday?'祝日料金':'土日料金', yen:course.surWeekend});
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  if(inRange(hm, fac.lateFrom, fac.lateTo)) items.push({label:`深夜料金（${fac.lateFrom}〜${fac.lateTo}）`, yen:course.surLate});
+  return items.filter(x=>x.yen>0);
+}
+function todaysVisit(memberId){
+  const t = ymd(now());
+  return DB.visits.find(v=>v.memberId===memberId && !v.canceled && v.at.slice(0,10)===t);
+}
+function quote(member, course, fac){
+  const sur = surchargeFor(course, fac, now());
+  const surTotal = sur.reduce((a,b)=>a+b.yen,0);
+  const use = Math.min(member.points, course.points);
+  const short = course.points - use;          // ポイント不足分＝店頭払い
+  return {sur, surTotal, use, short, cash: short + surTotal, after: member.points - use};
+}
+function checkin(member, course, fac){
+  const q = quote(member, course, fac);
+  const v = {id:'V'+String(DB.visits.length+1).padStart(4,'0'), memberId:member.id, companyId:member.companyId,
+    facilityId:fac.id, courseId:course.id, at: isoLocal(now()), points:q.use, short:q.short, surcharge:q.surTotal, canceled:false};
+  member.points -= q.use; DB.visits.push(v); save(); return v;
+}
+function cancelVisit(v){
+  if(!v || v.canceled) return;
+  v.canceled = true;
+  const m = byId(DB.members, v.memberId);
+  if(m && m.grantedMonth === v.at.slice(0,7)) m.points += v.points; // 同じ月の付与分なら戻す
+  save();
+}
+
+/* ============ 集計 ============ */
+function monthly(month){
+  const vs = DB.visits.filter(v=>!v.canceled && v.at.slice(0,7)===month);
+  const byCo = DB.companies.map(c=>{
+    const x = vs.filter(v=>v.companyId===c.id);
+    return {name:c.name, people:new Set(x.map(v=>v.memberId)).size, visits:x.length, points:x.reduce((a,v)=>a+v.points,0)};
+  });
+  const byFac = DB.facilities.map(f=>{
+    const x = vs.filter(v=>v.facilityId===f.id);
+    const pts = x.reduce((a,v)=>a+v.points,0);
+    return {id:f.id, name:f.name, visits:x.length, points:pts, rate:f.settleRate, pay:Math.round(pts*f.settleRate)};
+  });
+  return {byCo, byFac};
+}
+function downloadCSV(name, rows){
+  const csv = '﻿' + rows.map(r=>r.map(c=>`"${String(c ?? '').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download = name; a.click();
+}
+
+/* ============ 画面 ============ */
+const app = document.getElementById('app');
+let clockTimer = null, scanner = null;
+function stopTimers(){
+  if(clockTimer){ clearInterval(clockTimer); clockTimer=null }
+  if(scanner){ try{ scanner.stop().catch(()=>{}) }catch(e){} scanner=null }
+}
+function me(){ return DB.session.memberId ? byId(DB.members, DB.session.memberId) : null }
+function needLogin(){ if(!me()){ location.hash = '#/login'; return true } return false }
+function wrap(html, wide){ app.innerHTML = `<div class="wrap ${wide?'wide':''}">${html}</div>` }
+function startClock(){
+  const tick = ()=>{ const d=now(); const c=document.getElementById('clock'), t=document.getElementById('date'); if(c) c.textContent = hms(d); if(t) t.textContent = jpDate(d) };
+  tick(); clockTimer = setInterval(tick, 250);
+}
+
+const routes = {'':viewHome, login:viewLogin, card:viewCard, scan:viewScan, checkin:viewCheckin, done:viewDone, admin:viewAdmin, company:viewCompany, facility:viewFacility};
+function render(){
+  stopTimers(); load(); grantMonthly();
+  const [path, ...rest] = location.hash.replace(/^#\/?/,'').split('/');
+  (routes[path] || viewHome)(...rest);
+}
+function go(h){ if(location.hash===h) render(); else location.hash = h }
+
+function viewHome(){
+  wrap(`
+  <h1>簡易デモ：画面一覧</h1>
+  <p class="muted">温浴施設を使った企業向け福利厚生サービスの動きを、実際に触って確認いただくための簡易版です。データはこのブラウザの中だけに保存されます。</p>
+  <div class="card"><b>📱 会員（従業員）</b><p class="muted">ログイン → 会員証 → 施設のQRを読み込み → コースを選んで入館</p>
+    <a class="btn" href="#/login">会員としてログイン</a></div>
+  <div class="card"><b>🛠 運営の管理画面</b><p class="muted">企業・会員（CSV一括）／施設・コース・料金／QR発行／入館記録と取消／月次集計</p>
+    <a class="btn sub" href="#/admin/members">運営の管理画面を開く</a></div>
+  <div class="card"><b>🏢 導入企業の管理画面</b><p class="muted">自社の会員と利用状況だけが見えます</p>
+    ${DB.companies.map(c=>`<a class="btn sub mt" href="#/company/${c.id}">${esc(c.name)}</a>`).join('')}</div>
+  <div class="card"><b>♨ 提携施設の管理画面</b><p class="muted">本日の入館と、その月の精算額だけが見えます</p>
+    ${DB.facilities.map(f=>`<a class="btn sub mt" href="#/facility/${f.id}">${esc(f.name)}</a>`).join('')}</div>
+  <div class="card"><b>デモを最初の状態に戻す</b><p class="muted">入館記録・設定をすべて初期値に戻します</p>
+    <button class="btn small danger" id="reset">初期状態に戻す</button></div>`);
+  document.getElementById('reset').onclick = ()=>{ if(confirm('デモのデータを初期状態に戻しますか？')){ try{localStorage.removeItem(KEY)}catch(e){} render() } };
+}
+
+function viewLogin(){
+  wrap(`
+  <h1>ログイン</h1>
+  <div class="card">
+    <label class="f">メールアドレス</label><input class="f" id="em" type="email" value="hanako@example.com" autocomplete="username">
+    <label class="f">会員番号</label><input class="f" id="no" value="M001" autocomplete="current-password">
+    <button class="btn mt" id="login">ログイン</button>
+    <div id="err"></div>
+  </div>
+  <p class="muted">デモ用の会員：hanako@example.com / M001、ichiro@example.com / M002、kenta@example.com / M003<br>
+  本番では、メールに届くリンクでログインする方式（パスワード不要）にすると、ITに不慣れな方でも迷いにくくなります。</p>`);
+  document.getElementById('login').onclick = ()=>{
+    const em = document.getElementById('em').value.trim().toLowerCase(), no = document.getElementById('no').value.trim().toUpperCase();
+    const m = DB.members.find(x=>x.email.toLowerCase()===em && x.id===no);
+    if(!m){ document.getElementById('err').innerHTML = `<div class="alert bad">メールアドレスか会員番号が違います</div>`; return }
+    DB.session.memberId = m.id; save();
+    let back = null; try{ back = sessionStorage.getItem('afterLogin'); sessionStorage.removeItem('afterLogin') }catch(e){}
+    go(back || '#/card');
+  };
+}
+
+function viewCard(){
+  if(needLogin()) return;
+  const m = me(), co = byId(DB.companies, m.companyId), tv = todaysVisit(m.id);
+  wrap(`
+  <div class="mcard" id="mcard"><div class="shine"></div>
+    <div class="lbl">会員証</div>
+    <div class="name">${esc(m.name)}</div>
+    <div class="co">${esc(co ? co.name : '')}</div>
+    <div class="row mt">
+      <div><div class="lbl">残りポイント</div><div class="pts"><span id="pts">${yen(m.points)}</span><small style="font-size:16px"> pt</small></div></div>
+      <div style="text-align:right"><div class="date" id="date"></div><div class="clock" id="clock"></div></div>
+    </div>
+  </div>
+  <p class="muted">時刻が秒まで動いている画面だけが有効です（スクリーンショットの使い回しを防ぐため）。</p>
+  ${tv ? `<div class="alert ok">本日はご入館済みです（${tv.at.slice(11,16)} ${esc(byId(DB.facilities,tv.facilityId).name)}）。ご利用は1日1回までです。</div>`
+       : `<a class="btn mt" id="toScan" href="#/scan">📷 施設のQRコードを読み込む</a>`}
+  <h2>今月のご利用</h2>
+  <div class="card">${historyHtml(m)}</div>
+  <button class="btn sub small" id="logout">ログアウト</button>`);
+  startClock();
+  document.getElementById('logout').onclick = ()=>{ DB.session.memberId=null; save(); go('#/login') };
+}
+function historyHtml(m){
+  const vs = DB.visits.filter(v=>v.memberId===m.id && v.at.slice(0,7)===ym(now())).reverse();
+  if(!vs.length) return `<span class="muted">まだありません</span>`;
+  return vs.map(v=>`<div class="${v.canceled?'muted':''}">${v.at.slice(5,16)}　${esc(byId(DB.facilities,v.facilityId).name)}・${esc(byId(DB.courses,v.courseId).name)}　−${yen(v.points)}pt${v.canceled?'（取消）':''}</div>`).join('');
+}
+
+function viewScan(){
+  if(needLogin()) return;
+  wrap(`
+  <h1>QRコードを読み込む</h1>
+  <p class="muted">施設の受付に貼ってあるQRコードにカメラを向けてください。<br>スマートフォン標準のカメラで読み込んでも、同じ画面が開きます。</p>
+  <div id="reader"></div>
+  <div id="camerr"></div>
+  <h2>カメラが使えない時（デモ用）</h2>
+  ${DB.facilities.map(f=>`<a class="btn sub mt" href="#/checkin/${f.id}/${f.token}">${esc(f.name)} のQRを読み込んだことにする</a>`).join('')}
+  <a class="btn sub mt" href="#/card">会員証に戻る</a>`);
+  if(window.Html5Qrcode && window.isSecureContext){
+    scanner = new Html5Qrcode('reader');
+    scanner.start({facingMode:'environment'}, {fps:10, qrbox:220}, txt=>{
+      const i = txt.indexOf('#/checkin/');
+      if(i>=0){ const h = txt.slice(i); stopTimers(); go(h) }
+      else { const e=document.getElementById('camerr'); if(e) e.innerHTML = `<div class="alert bad">このサービスのQRコードではありません</div>` }
+    }).catch(()=>{ const e=document.getElementById('camerr'); if(e) e.innerHTML = `<div class="alert warn">カメラを起動できませんでした。下のボタンでお試しください。</div>`; scanner=null });
+  }
+}
+
+let selCourse = null;
+function viewCheckin(fid, token){
+  const fac = byId(DB.facilities, fid);
+  if(!fac || fac.token !== token){ wrap(`<div class="alert bad">このQRコードは無効です。受付にお声がけください。</div><a class="btn sub" href="#/card">会員証に戻る</a>`); return }
+  if(!me()){ try{ sessionStorage.setItem('afterLogin', `#/checkin/${fid}/${token}`) }catch(e){} go('#/login'); return }
+  const m = me(), tv = todaysVisit(m.id);
+  if(tv){ wrap(`<h1>${esc(fac.name)}</h1><div class="alert warn">本日はすでにご入館済みです（${tv.at.slice(11,16)}）。ご利用は1日1回までです。</div><a class="btn sub" href="#/card">会員証に戻る</a>`); return }
+  const courses = DB.courses.filter(c=>c.facilityId===fid);
+  if(!courses.find(c=>c.id===selCourse)) selCourse = null;
+  const c = selCourse ? byId(DB.courses, selCourse) : null;
+  const q = c ? quote(m, c, fac) : null;
+  wrap(`
+  <h1>${esc(fac.name)}</h1>
+  <p class="muted">${jpDate(now())} ${hms(now()).slice(0,5)}　残り <b>${yen(m.points)}pt</b></p>
+  <h2>① コースを選んでください</h2>
+  ${courses.map(k=>{ const s = surchargeFor(k, fac, now()).reduce((a,b)=>a+b.yen,0);
+    return `<div class="opt ${k.id===selCourse?'sel':''}" data-k="${k.id}"><div><b>${esc(k.name)}</b>${s?`<div class="muted">本日は追加料金 ${yen(s)}円</div>`:''}</div><div class="p">${yen(k.points)}pt</div></div>`}).join('')}
+  ${q ? `
+  <h2>② 内容をご確認ください</h2>
+  ${q.sur.length ? `<div class="alert warn" id="surAlert"><b>⚠ 本日は追加料金がかかります（受付でお支払い）</b><br>${q.sur.map(s=>`${esc(s.label)}　${yen(s.yen)}円`).join('<br>')}</div>` : `<div class="alert ok">本日の追加料金はありません</div>`}
+  <div class="card">
+    <div>使うポイント：<b>${yen(q.use)}pt</b></div>
+    <div>入館後の残り：<b>${yen(q.after)}pt</b></div>
+    ${q.short ? `<div class="alert bad" id="shortAlert">ポイントが ${yen(q.short)}pt 足りません。不足分 ${yen(q.short)}円 は受付でお支払いください。</div>` : ''}
+    <div style="font-size:18px" class="mt">受付でのお支払い：<b id="cash">${yen(q.cash)}円</b></div>
+  </div>
+  <button class="btn" id="enter">この内容で入館する</button>` : ''}
+  <a class="btn sub mt" href="#/card">やめる</a>`);
+  app.querySelectorAll('.opt').forEach(el=>el.onclick=()=>{ selCourse = el.dataset.k; render() });
+  const btn = document.getElementById('enter');
+  if(btn) btn.onclick = ()=>{
+    btn.disabled = true;
+    if(todaysVisit(m.id)){ render(); return }
+    const v = checkin(m, c, fac); selCourse=null; go('#/done/'+v.id);
+  };
+}
+
+function viewDone(vid){
+  if(needLogin()) return;
+  const v = byId(DB.visits, vid); if(!v){ go('#/card'); return }
+  const m = me(), fac = byId(DB.facilities, v.facilityId), c = byId(DB.courses, v.courseId);
+  wrap(`
+  <div class="mcard" style="text-align:center"><div class="shine"></div>
+    <div style="font-size:56px;line-height:1">✓</div>
+    <div style="font-size:22px;font-weight:700">入館受付が完了しました</div>
+    <div class="clock mt" id="clock"></div><div class="date" id="date"></div>
+  </div>
+  <div class="card">
+    <div><b>${esc(m.name)}</b>（${esc(byId(DB.companies,m.companyId).name)}）</div>
+    <div>${esc(fac.name)}・${esc(c.name)}</div>
+    <div>受付番号 <b>${v.id}</b>　${v.at.slice(11,16)}</div>
+    <div>使ったポイント ${yen(v.points)}pt ／ 残り ${yen(m.points)}pt</div>
+    <div style="font-size:20px" class="mt">受付でのお支払い：<b>${yen(v.short+v.surcharge)}円</b></div>
+  </div>
+  <div class="alert ok">この画面を受付スタッフにお見せください。</div>
+  <a class="btn sub" href="#/card">会員証に戻る</a>`);
+  startClock();
+}
+
+/* ---------- 運営の管理画面 ---------- */
+const ADMIN_TABS = [['members','企業・会員'],['facilities','施設・コース・料金'],['qr','QR発行'],['visits','入館記録'],['monthly','月次集計'],['settings','ポイント設定']];
+function viewAdmin(tab){
+  tab = tab || 'members';
+  const head = `<h1>運営の管理画面</h1><div class="tabs">${ADMIN_TABS.map(([k,l])=>`<a href="#/admin/${k}" class="${k===tab?'on':''}">${l}</a>`).join('')}</div>`;
+  ({members:adminMembers, facilities:adminFacilities, qr:adminQR, visits:adminVisits, monthly:adminMonthly, settings:adminSettings}[tab]||adminMembers)(head);
+}
+function adminMembers(head){
+  wrap(head + `
+  <h2>導入企業</h2>
+  <div class="tablewrap"><table><tr><th>企業ID</th><th>企業名</th><th>毎月の付与pt</th><th>会員数</th></tr>
+  ${DB.companies.map(c=>`<tr><td>${c.id}</td><td><input data-c="${c.id}" data-f="name" value="${esc(c.name)}"></td><td><input class="num" type="number" min="0" data-c="${c.id}" data-f="monthlyPoints" value="${c.monthlyPoints}"></td><td class="num">${DB.members.filter(m=>m.companyId===c.id).length}</td></tr>`).join('')}
+  </table></div>
+  <button class="btn small sub mt" id="addCo">＋ 企業を追加</button>
+  <h2>会員</h2>
+  <div class="tablewrap"><table id="memTable"><tr><th>会員番号</th><th>氏名</th><th>企業</th><th>メール</th><th>残りpt</th></tr>
+  ${DB.members.map(m=>`<tr><td>${m.id}</td><td>${esc(m.name)}</td><td>${esc((byId(DB.companies,m.companyId)||{}).name||'')}</td><td>${esc(m.email)}</td><td class="num">${yen(m.points)}</td></tr>`).join('')}
+  </table></div>
+  <h2>CSVで一括登録</h2>
+  <p class="muted">1行に「氏名,企業ID,メールアドレス」。会員番号は自動で振ります。登録済みのメールアドレスは飛ばします。</p>
+  <textarea id="csv">丁野 美咲,C1,misaki@example.com
+戊野 大輔,C2,daisuke@example.com</textarea>
+  <input type="file" id="csvfile" accept=".csv,text/csv" class="mt">
+  <button class="btn small mt" id="imp">取り込む</button>
+  <div id="impres"></div>`, true);
+  app.querySelectorAll('input[data-c]').forEach(el=>el.onchange=()=>{
+    const c = byId(DB.companies, el.dataset.c); c[el.dataset.f] = el.type==='number' ? Math.max(0, parseInt(el.value||0,10)) : el.value; save();
+  });
+  document.getElementById('addCo').onclick = ()=>{ const id='C'+(DB.companies.length+1); DB.companies.push({id, name:'新しい企業', monthlyPoints:3000}); save(); render() };
+  document.getElementById('csvfile').onchange = e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(t=>{ document.getElementById('csv').value = t.replace(/^﻿/,'') }) };
+  document.getElementById('imp').onclick = ()=>{
+    const lines = document.getElementById('csv').value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    let ok=0; const ng=[];
+    lines.forEach((ln,i)=>{
+      const [name, coId, email] = ln.split(',').map(s=>(s||'').trim());
+      if(i===0 && /氏名|name/i.test(name||'')) return; // 見出し行は飛ばす
+      if(!name || !email || !email.includes('@')) return ng.push(`${i+1}行目：氏名かメールが空です`);
+      if(!byId(DB.companies, coId)) return ng.push(`${i+1}行目：企業ID「${coId}」がありません`);
+      if(DB.members.some(m=>m.email.toLowerCase()===email.toLowerCase())) return ng.push(`${i+1}行目：${email} は登録済みのため飛ばしました`);
+      const id = 'M'+String(DB.members.length+1).padStart(3,'0');
+      DB.members.push({id, name, companyId:coId, email, points:0, grantedMonth:''}); ok++;
+    });
+    save(); render();
+    document.getElementById('impres').innerHTML = `<div class="alert ${ng.length?'warn':'ok'}">${ok}件を登録しました（今月分のポイントも付与済み）${ng.length?'<br>'+ng.map(esc).join('<br>'):''}</div>`;
+  };
+}
+function adminFacilities(head){
+  wrap(head + `
+  <p class="muted">料金・追加料金・精算の比率はここで変更でき、プログラムの変更は要りません。変更はすぐ会員の画面に反映されます。</p>
+  ${DB.facilities.map(f=>`
+  <div class="card">
+    <div class="tablewrap"><table><tr><th>施設名</th><th>精算の比率（施設へ支払う割合）</th><th>深夜料金の時間帯</th></tr>
+    <tr><td><input data-fa="${f.id}" data-f="name" value="${esc(f.name)}"></td>
+    <td><input type="number" step="0.01" min="0" max="1" data-fa="${f.id}" data-f="settleRate" value="${f.settleRate}"></td>
+    <td style="white-space:nowrap"><input type="time" style="width:46%" data-fa="${f.id}" data-f="lateFrom" value="${f.lateFrom}">〜<input type="time" style="width:46%" data-fa="${f.id}" data-f="lateTo" value="${f.lateTo}"></td></tr></table></div>
+    <div class="tablewrap mt"><table><tr><th>コース</th><th>消費pt</th><th>土日祝の追加（円）</th><th>深夜の追加（円）</th></tr>
+    ${DB.courses.filter(c=>c.facilityId===f.id).map(c=>`<tr><td><input data-k="${c.id}" data-f="name" value="${esc(c.name)}"></td>
+      <td><input type="number" min="0" data-k="${c.id}" data-f="points" value="${c.points}"></td>
+      <td><input type="number" min="0" data-k="${c.id}" data-f="surWeekend" value="${c.surWeekend}"></td>
+      <td><input type="number" min="0" data-k="${c.id}" data-f="surLate" value="${c.surLate}"></td></tr>`).join('')}
+    </table></div>
+    <button class="btn small sub mt" data-addk="${f.id}">＋ コースを追加</button>
+  </div>`).join('')}
+  <button class="btn small sub" id="addF">＋ 施設を追加</button>
+  <div id="saved"></div>`, true);
+  const flash = ()=>{ document.getElementById('saved').innerHTML = `<div class="alert ok">保存しました</div>` };
+  app.querySelectorAll('input[data-fa]').forEach(el=>el.onchange=()=>{
+    const f = byId(DB.facilities, el.dataset.fa), k = el.dataset.f;
+    f[k] = k==='settleRate' ? Math.min(1, Math.max(0, parseFloat(el.value||0))) : el.value; save(); flash();
+  });
+  app.querySelectorAll('input[data-k]').forEach(el=>el.onchange=()=>{
+    const c = byId(DB.courses, el.dataset.k), k = el.dataset.f;
+    c[k] = el.type==='number' ? Math.max(0, parseInt(el.value||0,10)) : el.value; save(); flash();
+  });
+  app.querySelectorAll('[data-addk]').forEach(el=>el.onclick=()=>{
+    DB.courses.push({id:'K'+rnd().slice(0,5), facilityId:el.dataset.addk, name:'新しいコース', points:1000, surWeekend:0, surLate:0}); save(); render();
+  });
+  document.getElementById('addF').onclick = ()=>{
+    DB.facilities.push({id:'F'+(DB.facilities.length+1), name:'新しい施設', settleRate:0.8, lateFrom:'22:00', lateTo:'05:00', token:rnd()}); save(); render();
+  };
+}
+function checkinUrl(f){ return location.origin + location.pathname + `#/checkin/${f.id}/${f.token}` }
+function adminQR(head){
+  wrap(head + `
+  <p class="muted">受付に貼るQRコードです。印刷してお使いください。QRを作り直すと、古いQRは使えなくなります（貼り紙を持ち出された時の対策）。</p>
+  <button class="btn small sub noprint" id="prt">🖨 印刷する</button>
+  <div class="qrgrid mt">${DB.facilities.map(f=>`<div class="qrbox"><b>${esc(f.name)}</b><div class="q" id="q_${f.id}"></div>
+    <div style="font-size:12px">スマートフォンのカメラで読み込んでください</div>
+    <button class="btn small sub mt noprint" data-re="${f.id}">QRを作り直す</button></div>`).join('')}</div>`, true);
+  document.getElementById('prt').onclick = ()=>window.print();
+  DB.facilities.forEach(f=>{ if(window.QRCode) new QRCode(document.getElementById('q_'+f.id), {text:checkinUrl(f), width:170, height:170}) });
+  app.querySelectorAll('[data-re]').forEach(el=>el.onclick=()=>{
+    if(!confirm('QRを作り直すと、今貼ってあるQRは使えなくなります。よろしいですか？')) return;
+    byId(DB.facilities, el.dataset.re).token = rnd(); save(); render();
+  });
+}
+function visitsTable(vs, canCancel){
+  if(!vs.length) return `<p class="muted">記録はありません</p>`;
+  return `<div class="tablewrap"><table><tr><th>受付番号</th><th>日時</th><th>会員</th><th>企業</th><th>施設・コース</th><th>使用pt</th><th>店頭払い</th>${canCancel?'<th></th>':''}</tr>
+  ${vs.slice().reverse().map(v=>{ const m=byId(DB.members,v.memberId)||{}, c=byId(DB.companies,v.companyId)||{}, f=byId(DB.facilities,v.facilityId)||{}, k=byId(DB.courses,v.courseId)||{};
+    return `<tr class="${v.canceled?'cancel':''}"><td>${v.id}</td><td>${v.at.slice(5,16)}</td><td>${esc(m.name||'')}</td><td>${esc(c.name||'')}</td><td>${esc(f.name||'')}・${esc(k.name||'')}</td><td class="num">${yen(v.points)}</td><td class="num">${yen(v.short+v.surcharge)}円</td>
+    ${canCancel?`<td>${v.canceled?'取消済':`<button class="btn small danger" data-cv="${v.id}">取消</button>`}</td>`:''}</tr>`}).join('')}
+  </table></div>`;
+}
+function adminVisits(head){
+  wrap(head + `<p class="muted">取り消すと、その月のポイントが会員へ戻ります。</p>` + visitsTable(DB.visits, true), true);
+  app.querySelectorAll('[data-cv]').forEach(el=>el.onclick=()=>{
+    if(!confirm('この入館記録を取り消しますか？')) return;
+    cancelVisit(byId(DB.visits, el.dataset.cv)); render();
+  });
+}
+let selMonth = null;
+function monthOptions(sel){
+  const set = new Set(DB.visits.map(v=>v.at.slice(0,7))); set.add(ym(now())); set.add(sel);
+  return [...set].sort().reverse().map(m=>`<option ${m===sel?'selected':''}>${m}</option>`).join('');
+}
+function adminMonthly(head){
+  const month = selMonth || ym(now()); const r = monthly(month);
+  wrap(head + `
+  <label class="f">対象月</label><select id="mon" class="f" style="max-width:200px">${monthOptions(month)}</select>
+  <h2>企業別の利用</h2>
+  <div class="tablewrap"><table id="coTable"><tr><th>企業</th><th>利用人数</th><th>入館回数</th><th>使用pt</th></tr>
+  ${r.byCo.map(x=>`<tr><td>${esc(x.name)}</td><td class="num">${x.people}人</td><td class="num">${x.visits}回</td><td class="num">${yen(x.points)}</td></tr>`).join('')}</table></div>
+  <button class="btn small sub mt" id="csvCo">⬇ CSVで出力</button>
+  <h2>施設別の精算額</h2>
+  <div class="tablewrap"><table id="facTable"><tr><th>施設</th><th>入館回数</th><th>使用pt</th><th>精算の比率</th><th>精算額</th></tr>
+  ${r.byFac.map(x=>`<tr><td>${esc(x.name)}</td><td class="num">${x.visits}回</td><td class="num">${yen(x.points)}</td><td class="num">${Math.round(x.rate*100)}%</td><td class="num"><b>${yen(x.pay)}円</b></td></tr>`).join('')}</table></div>
+  <button class="btn small sub mt" id="csvFac">⬇ CSVで出力</button>
+  <p class="muted">精算額＝使用ポイント（1pt＝1円）×精算の比率。店頭でのお支払い分は施設の売上のため含めていません。</p>`, true);
+  document.getElementById('mon').onchange = e=>{ selMonth = e.target.value; render() };
+  document.getElementById('csvCo').onclick = ()=>downloadCSV(`企業別利用_${month}.csv`, [['企業','利用人数','入館回数','使用pt'], ...r.byCo.map(x=>[x.name,x.people,x.visits,x.points])]);
+  document.getElementById('csvFac').onclick = ()=>downloadCSV(`施設別精算_${month}.csv`, [['施設','入館回数','使用pt','精算の比率','精算額'], ...r.byFac.map(x=>[x.name,x.visits,x.points,x.rate,x.pay])]);
+}
+function adminSettings(head){
+  wrap(head + `
+  <div class="card">
+    <b>毎月1日の自動付与</b>
+    <p class="muted">本番では毎月1日0時にサーバが自動で付与します。デモでは、画面を開いた時点で今月分が未付与の会員に付与します（上の「デモ用の日時」を来月にすると確認できます）。</p>
+    <label><input type="checkbox" id="carry" ${DB.settings.carryOver?'checked':''}> 残ったポイントを翌月へ繰り越す</label>
+    <p class="muted">繰り越しの有無は、ご契約の内容に合わせて決めます（ご相談事項）。</p>
+  </div>`, true);
+  document.getElementById('carry').onchange = e=>{ DB.settings.carryOver = e.target.checked; save() };
+}
+
+/* ---------- 導入企業・提携施設の管理画面 ---------- */
+function viewCompany(cid){
+  const c = byId(DB.companies, cid); if(!c){ go('#/'); return }
+  const month = ym(now()); const vs = DB.visits.filter(v=>v.companyId===cid && v.at.slice(0,7)===month);
+  const ms = DB.members.filter(m=>m.companyId===cid);
+  wrap(`
+  <h1>${esc(c.name)} 様 管理画面</h1>
+  <p class="muted">自社の会員と利用状況だけが表示されます。毎月の付与：${yen(c.monthlyPoints)}pt／人</p>
+  <h2>会員（${ms.length}人）</h2>
+  <div class="tablewrap"><table><tr><th>会員番号</th><th>氏名</th><th>今月の入館</th><th>残りpt</th></tr>
+  ${ms.map(m=>`<tr><td>${m.id}</td><td>${esc(m.name)}</td><td class="num">${vs.filter(v=>v.memberId===m.id&&!v.canceled).length}回</td><td class="num">${yen(m.points)}</td></tr>`).join('')}</table></div>
+  <h2>${month} の入館記録</h2>${visitsTable(vs, false)}
+  <button class="btn small sub mt" id="csv">⬇ CSVで出力</button>`, true);
+  document.getElementById('csv').onclick = ()=>downloadCSV(`${c.name}_${month}.csv`, [['受付番号','日時','会員','施設','コース','使用pt','取消'],
+    ...vs.map(v=>[v.id,v.at,(byId(DB.members,v.memberId)||{}).name,(byId(DB.facilities,v.facilityId)||{}).name,(byId(DB.courses,v.courseId)||{}).name,v.points,v.canceled?'取消':''])]);
+}
+function viewFacility(fid){
+  const f = byId(DB.facilities, fid); if(!f){ go('#/'); return }
+  const today = ymd(now()), month = ym(now());
+  const tv = DB.visits.filter(v=>v.facilityId===fid && v.at.slice(0,10)===today);
+  const r = monthly(month).byFac.find(x=>x.id===fid);
+  wrap(`
+  <h1>${esc(f.name)} 管理画面</h1>
+  <p class="muted">受付では、会員の画面の「受付番号」と「秒まで動く時刻」を確認してください。</p>
+  <h2>本日（${jpDate(now())}）の入館 ${tv.filter(v=>!v.canceled).length}件</h2>${visitsTable(tv, false)}
+  <h2>${month} の精算見込み</h2>
+  <div class="card">入館 ${r.visits}回 ／ 使用 ${yen(r.points)}pt ／ 精算の比率 ${Math.round(f.settleRate*100)}%<div style="font-size:20px" class="mt">精算額 <b id="facPay">${yen(r.pay)}円</b></div></div>`, true);
+}
+
+/* ============ デモ用の日時切り替え ============ */
+const fakeNowEl = document.getElementById('fakeNow');
+function showFake(){ document.getElementById('fakeState').textContent = fakeOffset ? `（いま ${jpDate(now())} ${hms(now()).slice(0,5)} として動作中）` : '' }
+document.getElementById('fakeApply').onclick = ()=>{ if(!fakeNowEl.value) return; fakeOffset = new Date(fakeNowEl.value).getTime() - Date.now(); try{sessionStorage.setItem('fakeOffset', fakeOffset)}catch(e){} showFake(); render() };
+document.getElementById('fakeClear').onclick = ()=>{ fakeOffset = 0; try{sessionStorage.removeItem('fakeOffset')}catch(e){} fakeNowEl.value=''; showFake(); render() };
+try{ fakeOffset = parseInt(sessionStorage.getItem('fakeOffset')||'0',10) || 0 }catch(e){ fakeOffset = 0 }
+showFake();
+
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
