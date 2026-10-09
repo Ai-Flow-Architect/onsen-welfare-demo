@@ -104,7 +104,8 @@ with sync_playwright() as p:
     pg.click("[data-cv=V0001]")
     check("取消済の表示", pg.is_visible("text=取消済"))
     pg.goto(URL + "#/admin/members")
-    check("取消で1,600pt戻る", "1,600" in pg.inner_text("#memTable"))
+    m001 = pg.locator("#memTable tr", has_text="M001").inner_text()
+    check(f"取消で1,600pt戻る（M001行: {m001.split()[-1]}）", m001.split()[-1] == "1,600")
 
     # CSV一括登録
     pg.click("#imp")
